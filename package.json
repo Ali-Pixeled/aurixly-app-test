@@ -1,7 +1,7 @@
 {
   "name": "aurixly-investment-platform",
   "version": "1.0.0-beta.1",
-  "description": "A modern investment platform built with React, TypeScript, and Supabase",
+  "description": "A modern investment platform built with React, TypeScript, and Supabase - BETA VERSION",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,10 +18,15 @@
     "typescript",
     "supabase",
     "clerk",
-    "tailwindcss"
+    "tailwindcss",
+    "beta"
   ],
   "author": "Aurixly Team",
-  "license": "MIT",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "private"
+  },
   "dependencies": {
     "@clerk/clerk-react": "^5.32.4",
     "@clerk/nextjs": "^6.23.3",

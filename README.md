@@ -1,16 +1,35 @@
-# Aurixly Investment Platform (Beta v1.0.0-beta.1)
+# Aurixly Investment Platform (BETA v1.0.0-beta.1)
 
-A modern, secure investment platform built with React, TypeScript, Supabase, and Clerk authentication.
+🚀 **BETA VERSION** - A modern, secure investment platform built with React, TypeScript, Supabase, and Clerk authentication.
 
-## 🚀 Features
+> ⚠️ **BETA SOFTWARE**: This is beta software intended for testing and demonstration purposes only. Not recommended for production use with real financial transactions.
 
-- **Secure Authentication** - Powered by Clerk with email/password and social login
-- **Investment Plans** - Multiple investment options with different risk/reward profiles
-- **Real-time Dashboard** - Track investments, earnings, and portfolio performance
-- **Transaction Management** - Deposit, withdraw, and view transaction history
-- **Admin Panel** - Comprehensive admin tools for platform management
-- **Mobile Responsive** - Optimized for all device sizes
-- **Bank-level Security** - Row-level security with Supabase
+## 🌟 Features
+
+- **🔐 Secure Authentication** - Powered by Clerk with email/password and social login
+- **📈 Investment Plans** - Three tier investment options with guaranteed returns
+- **📊 Real-time Dashboard** - Track investments, earnings, and portfolio performance
+- **💰 Transaction Management** - Deposit, withdraw, and view transaction history
+- **👨‍💼 Admin Panel** - Comprehensive admin tools for platform management
+- **📱 Mobile Responsive** - Optimized for all device sizes
+- **🔒 Bank-level Security** - Row-level security with Supabase
+
+## 💎 Investment Plans
+
+### 🥉 Starter Plan
+- **Investment Range**: $2 - $20
+- **Return**: 20% profit after 2 weeks
+- **Perfect for**: New investors
+
+### 🥈 Premium Plan (Featured)
+- **Investment Range**: $20 - $100
+- **Return**: 30% profit after 2 weeks
+- **Perfect for**: Regular investors
+
+### 🥇 VIP Plan
+- **Investment Range**: $100 - $10,000
+- **Return**: 40% profit after 2 weeks
+- **Perfect for**: High-value investors
 
 ## 🛠️ Tech Stack
 
@@ -71,32 +90,12 @@ The platform uses the following main tables:
 - Input validation and sanitization
 - CSRF protection
 
-## 🎯 Investment Plans
-
-### Starter Plan
-- **Rate**: 0.5% per hour
-- **Duration**: 10 days
-- **Min/Max**: $10 - $500
-- **Total Return**: 120%
-
-### Premium Plan (Featured)
-- **Rate**: 0.75% per hour
-- **Duration**: 7 days
-- **Min/Max**: $500 - $2,000
-- **Total Return**: 126%
-
-### VIP Plan
-- **Rate**: 1.2% per hour
-- **Duration**: 5 days
-- **Min/Max**: $2,000 - $10,000
-- **Total Return**: 144%
-
 ## 📱 Features Overview
 
 ### User Features
 - **Dashboard** - Overview of investments and earnings
 - **Investment Plans** - Browse and invest in different plans
-- **Exchange** - Deposit and withdraw funds
+- **Exchange** - Deposit (min $1) and withdraw (min $10) funds
 - **Portfolio** - Track active and completed investments
 - **Transaction History** - View all account activity
 - **Profile Management** - Update account settings
@@ -141,28 +140,33 @@ src/
 └── main.tsx           # Application entry point
 ```
 
-## 📄 License
+## ⚠️ BETA Disclaimer
 
-This project is licensed under the MIT License.
+**This is BETA software for demonstration and testing purposes only.**
+
+- All investment features are simulated
+- Do not use with real financial transactions
+- Not recommended for production environments
+- Features may change without notice
+- No warranty or guarantee provided
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+This is currently a private beta project. Contributing guidelines will be provided when the project moves to a stable release.
 
 ## 📞 Support
 
-For support, email support@aurixly.com or create an issue in the repository.
+For support during the beta period, please contact the development team directly.
 
-## ⚠️ Disclaimer
+## 📄 Copyright
 
-This is a beta version. All investments carry risk. Past performance does not guarantee future results. Please invest responsibly and only invest what you can afford to lose.
+© 2025 Aurixly Investment Platform. All rights reserved.
+
+This software is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
 
 ---
 
 **Version**: 1.0.0-beta.1  
 **Last Updated**: January 2025  
-**Status**: Beta Release
+**Status**: Private Beta Release  
+**License**: Proprietary (All Rights Reserved)
