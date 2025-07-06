@@ -18,8 +18,8 @@ export function Exchange() {
       return;
     }
 
-    if (depositAmount < 10) {
-      alert('Minimum deposit amount is $10');
+    if (depositAmount < 1) {
+      alert('Minimum deposit amount is $1');
       return;
     }
 
@@ -272,7 +272,7 @@ export function Exchange() {
                     activeAction === 'deposit' ? 'text-green-800' : 'text-yellow-800'
                   }`}>
                     {activeAction === 'deposit' 
-                      ? 'Minimum deposit amount is $10. Funds will be available immediately.'
+                      ? 'Minimum deposit amount is $1. Funds will be available immediately.'
                       : 'Minimum withdrawal amount is $10. Processing time: 24 hours.'
                     }
                   </p>
