@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for Clerk components */
+.clerk-auth-container .cl-formButtonPrimary:disabled {
+  @apply bg-gray-400 cursor-not-allowed;
+}
+
+.clerk-auth-container .cl-card {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.clerk-auth-container .cl-headerTitle,
+.clerk-auth-container .cl-headerSubtitle {
+  display: none !important;
+}
+
+.clerk-auth-container .cl-formFieldInput {
+  @apply border-gray-300 focus:border-indigo-500 focus:ring-indigo-500;
+}
+
+.clerk-auth-container .cl-footerActionLink {
+  @apply text-indigo-600 hover:text-indigo-500;
+}
+
+.clerk-auth-container .cl-socialButtonsBlockButton {
+  @apply border-gray-300 hover:bg-gray-50;
+}
+
+/* Ensure proper spacing */
+.clerk-auth-container {
+  @apply space-y-4;
+}
