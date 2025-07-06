@@ -103,26 +103,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const { user: clerkUser, isLoaded } = useUser();
 
-  // Initialize data and handle user authentication
+  // Initialize investment plans first (independent of user)
   useEffect(() => {
-    const initializeApp = async () => {
+    const initializePlans = async () => {
+      try {
+        console.log('Initializing investment plans...');
+        await initializeInvestmentPlans();
+        const plans = await getAllInvestmentPlans();
+        console.log('Investment plans loaded:', plans);
+        dispatch({ type: 'SET_INVESTMENT_PLANS', payload: plans });
+      } catch (error) {
+        console.error('Error initializing investment plans:', error);
+        // Don't throw error, just log it and continue
+      }
+    };
+
+    initializePlans();
+  }, []);
+
+  // Handle user authentication and data loading
+  useEffect(() => {
+    const initializeUser = async () => {
       if (!isLoaded) return;
 
       try {
         dispatch({ type: 'SET_LOADING', payload: true });
         dispatch({ type: 'SET_ERROR', payload: null });
 
-        // Initialize investment plans first
-        try {
-          await initializeInvestmentPlans();
-          const plans = await getAllInvestmentPlans();
-          dispatch({ type: 'SET_INVESTMENT_PLANS', payload: plans });
-        } catch (error) {
-          console.error('Error initializing investment plans:', error);
-        }
-
-        // Handle user authentication
         if (clerkUser) {
+          console.log('Initializing user:', clerkUser.id);
+          
           try {
             let user = await getUserByClerkId(clerkUser.id);
             
@@ -133,9 +143,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 email: clerkUser.emailAddresses[0]?.emailAddress || '',
                 name: clerkUser.fullName || clerkUser.firstName || 'User',
               };
+              console.log('Creating new user:', userData);
               user = await createUser(userData);
             }
 
+            console.log('User loaded:', user);
             dispatch({ type: 'SET_USER', payload: user });
 
             // Load user-specific data
@@ -167,16 +179,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
             console.error('Error handling user authentication:', error);
             dispatch({ type: 'SET_ERROR', payload: 'Failed to load user data' });
           }
+        } else {
+          // User is not logged in, clear user data but keep investment plans
+          dispatch({ type: 'SET_USER', payload: null });
+          dispatch({ type: 'SET_INVESTMENTS', payload: [] });
+          dispatch({ type: 'SET_TRANSACTIONS', payload: [] });
+          dispatch({ type: 'SET_USERS', payload: [] });
         }
       } catch (error) {
-        console.error('Error initializing app:', error);
+        console.error('Error initializing user:', error);
         dispatch({ type: 'SET_ERROR', payload: 'Failed to initialize application' });
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false });
       }
     };
 
-    initializeApp();
+    initializeUser();
   }, [isLoaded, clerkUser]);
 
   return (
