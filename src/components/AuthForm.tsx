@@ -113,7 +113,8 @@ export function AuthForm() {
             <div className="space-y-4">
               {isLogin ? (
                 <SignIn 
-                  routing="hash"
+                  routing="virtual"
+                  signUpUrl="#"
                   appearance={{
                     elements: {
                       formButtonPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-sm normal-case',
@@ -123,6 +124,7 @@ export function AuthForm() {
                       socialButtonsBlockButton: 'border-gray-300 hover:bg-gray-50',
                       formFieldInput: 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500',
                       footerActionLink: 'text-indigo-600 hover:text-indigo-500',
+                      footer: 'hidden',
                     },
                     layout: {
                       socialButtonsPlacement: 'bottom',
@@ -131,7 +133,8 @@ export function AuthForm() {
                 />
               ) : (
                 <SignUp 
-                  routing="hash"
+                  routing="virtual"
+                  signInUrl="#"
                   appearance={{
                     elements: {
                       formButtonPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-sm normal-case',
@@ -141,6 +144,7 @@ export function AuthForm() {
                       socialButtonsBlockButton: 'border-gray-300 hover:bg-gray-50',
                       formFieldInput: 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500',
                       footerActionLink: 'text-indigo-600 hover:text-indigo-500',
+                      footer: 'hidden',
                     },
                     layout: {
                       socialButtonsPlacement: 'bottom',
