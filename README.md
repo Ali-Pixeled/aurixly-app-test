@@ -1,2 +1,0 @@
-# aurixly-app
-aurixly-app
