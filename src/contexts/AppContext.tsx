@@ -20,7 +20,8 @@ import {
 } from '../services/transactionService';
 import { 
   initializeInvestmentPlans, 
-  getAllInvestmentPlans 
+  getAllInvestmentPlans,
+  updateInvestmentPlans
 } from '../services/investmentPlanService';
 
 type AppAction =
@@ -107,14 +108,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializePlans = async () => {
       try {
+        dispatch({ type: 'SET_LOADING', payload: true });
         console.log('Initializing investment plans...');
-        await initializeInvestmentPlans();
-        const plans = await getAllInvestmentPlans();
+        
+        // First try to get existing plans
+        let plans = await getAllInvestmentPlans();
+        
+        // If no plans exist, initialize them
+        if (plans.length === 0) {
+          console.log('No plans found, initializing...');
+          await initializeInvestmentPlans();
+          plans = await getAllInvestmentPlans();
+        }
+        
+        // Update plans with new amounts if needed
+        if (plans.length > 0) {
+          await updateInvestmentPlans();
+          plans = await getAllInvestmentPlans();
+        }
+        
         console.log('Investment plans loaded:', plans);
         dispatch({ type: 'SET_INVESTMENT_PLANS', payload: plans });
+        dispatch({ type: 'SET_ERROR', payload: null });
       } catch (error) {
         console.error('Error initializing investment plans:', error);
-        // Don't throw error, just log it and continue
+        dispatch({ type: 'SET_ERROR', payload: 'Failed to load investment plans' });
+      } finally {
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
     };
 
@@ -128,7 +148,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       try {
         dispatch({ type: 'SET_LOADING', payload: true });
-        dispatch({ type: 'SET_ERROR', payload: null });
 
         if (clerkUser) {
           console.log('Initializing user:', clerkUser.id);
