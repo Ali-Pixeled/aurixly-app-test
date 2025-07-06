@@ -4,7 +4,6 @@ import { TrendingUp, Shield, Users, DollarSign, CheckCircle } from 'lucide-react
 
 export function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
   const features = [
@@ -86,35 +85,27 @@ export function AuthForm() {
               </p>
             </div>
 
-            {/* Terms Acceptance for Sign Up */}
+            {/* Terms Notice for Sign Up */}
             {!isLogin && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <label className="flex items-start space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={acceptedTerms}
-                    onChange={(e) => setAcceptedTerms(e.target.checked)}
-                    className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                  />
-                  <div className="text-sm text-gray-700">
-                    I agree to the{' '}
-                    <button
-                      type="button"
-                      onClick={() => setShowTerms(true)}
-                      className="text-indigo-600 hover:text-indigo-500 underline"
-                    >
-                      Terms of Service
-                    </button>{' '}
-                    and{' '}
-                    <button
-                      type="button"
-                      onClick={() => setShowTerms(true)}
-                      className="text-indigo-600 hover:text-indigo-500 underline"
-                    >
-                      Privacy Policy
-                    </button>
-                  </div>
-                </label>
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  By creating an account, you agree to our{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowTerms(true)}
+                    className="text-blue-600 hover:text-blue-500 underline font-medium"
+                  >
+                    Terms of Service
+                  </button>{' '}
+                  and{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowTerms(true)}
+                    className="text-blue-600 hover:text-blue-500 underline font-medium"
+                  >
+                    Privacy Policy
+                  </button>
+                </p>
               </div>
             )}
 
@@ -122,6 +113,7 @@ export function AuthForm() {
             <div className="space-y-4">
               {isLogin ? (
                 <SignIn 
+                  routing="hash"
                   appearance={{
                     elements: {
                       formButtonPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-sm normal-case',
@@ -138,41 +130,30 @@ export function AuthForm() {
                   }}
                 />
               ) : (
-                <div className={acceptedTerms ? '' : 'pointer-events-none opacity-50'}>
-                  <SignUp 
-                    appearance={{
-                      elements: {
-                        formButtonPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-sm normal-case',
-                        card: 'shadow-none border-none',
-                        headerTitle: 'hidden',
-                        headerSubtitle: 'hidden',
-                        socialButtonsBlockButton: 'border-gray-300 hover:bg-gray-50',
-                        formFieldInput: 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500',
-                        footerActionLink: 'text-indigo-600 hover:text-indigo-500',
-                      },
-                      layout: {
-                        socialButtonsPlacement: 'bottom',
-                      }
-                    }}
-                  />
-                  {!acceptedTerms && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 rounded-lg">
-                      <p className="text-sm text-gray-600 text-center px-4">
-                        Please accept the terms and conditions to continue
-                      </p>
-                    </div>
-                  )}
-                </div>
+                <SignUp 
+                  routing="hash"
+                  appearance={{
+                    elements: {
+                      formButtonPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-sm normal-case',
+                      card: 'shadow-none border-none',
+                      headerTitle: 'hidden',
+                      headerSubtitle: 'hidden',
+                      socialButtonsBlockButton: 'border-gray-300 hover:bg-gray-50',
+                      formFieldInput: 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500',
+                      footerActionLink: 'text-indigo-600 hover:text-indigo-500',
+                    },
+                    layout: {
+                      socialButtonsPlacement: 'bottom',
+                    }
+                  }}
+                />
               )}
             </div>
 
             {/* Toggle Auth Mode */}
             <div className="mt-6 text-center">
               <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setAcceptedTerms(false);
-                }}
+                onClick={() => setIsLogin(!isLogin)}
                 className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
               >
                 {isLogin 
@@ -257,21 +238,12 @@ export function AuthForm() {
                 </section>
               </div>
 
-              <div className="mt-6 flex space-x-3">
+              <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => setShowTerms(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                   Close
-                </button>
-                <button
-                  onClick={() => {
-                    setAcceptedTerms(true);
-                    setShowTerms(false);
-                  }}
-                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                >
-                  Accept Terms
                 </button>
               </div>
             </div>
