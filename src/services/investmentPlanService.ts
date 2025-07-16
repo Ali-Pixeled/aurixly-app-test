@@ -3,16 +3,22 @@ import { InvestmentPlan } from '../types';
 
 export async function initializeInvestmentPlans() {
   try {
+    console.log('Checking if investment plans exist...');
     const { count, error: countError } = await supabase
       .from('investment_plans')
       .select('*', { count: 'exact', head: true });
 
-    if (countError) throw countError;
+    if (countError) {
+      console.error('Error checking investment plans count:', countError);
+      throw countError;
+    }
 
+    console.log('Investment plans count:', count);
+    
     if (count === 0) {
+      console.log('No investment plans found, creating default plans...');
       const defaultPlans = [
         {
-          id: 'starter',
           name: 'Starter Plan',
           min_amount: 2,
           max_amount: 20,
@@ -22,7 +28,6 @@ export async function initializeInvestmentPlans() {
           featured: false,
         },
         {
-          id: 'premium',
           name: 'Premium Plan',
           min_amount: 20,
           max_amount: 100,
@@ -32,7 +37,6 @@ export async function initializeInvestmentPlans() {
           featured: true,
         },
         {
-          id: 'vip',
           name: 'VIP Plan',
           min_amount: 100,
           max_amount: 10000,
@@ -47,7 +51,10 @@ export async function initializeInvestmentPlans() {
         .from('investment_plans')
         .insert(defaultPlans);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error inserting investment plans:', error);
+        throw error;
+      }
       console.log('Investment plans initialized successfully');
     } else {
       console.log('Investment plans already exist, count:', count);
@@ -60,16 +67,28 @@ export async function initializeInvestmentPlans() {
 
 export async function getAllInvestmentPlans() {
   try {
+    console.log('Fetching investment plans...');
     const { data, error } = await supabase
       .from('investment_plans')
       .select('*')
       .order('min_amount', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching investment plans:', error);
+      throw error;
+    }
 
+    console.log('Fetched investment plans:', data);
+    
     if (!data || data.length === 0) {
       console.log('No investment plans found, attempting to initialize...');
-      await initializeInvestmentPlans();
+      try {
+        await initializeInvestmentPlans();
+      } catch (initError) {
+        console.error('Failed to initialize investment plans:', initError);
+        // Return empty array if initialization fails
+        return [];
+      }
       
       // Try fetching again after initialization
       const { data: retryData, error: retryError } = await supabase
@@ -77,7 +96,10 @@ export async function getAllInvestmentPlans() {
         .select('*')
         .order('min_amount', { ascending: true });
       
-      if (retryError) throw retryError;
+      if (retryError) {
+        console.error('Error fetching investment plans after initialization:', retryError);
+        return [];
+      }
       
       return (retryData || []).map(plan => ({
         id: plan.id,
@@ -103,26 +125,27 @@ export async function getAllInvestmentPlans() {
     })) as InvestmentPlan[];
   } catch (error) {
     console.error('Error fetching investment plans:', error);
-    throw error;
+    return [];
   }
 }
 
 export async function updateInvestmentPlans() {
   try {
+    console.log('Updating investment plans...');
     // Update existing plans with new amounts
     const updates = [
       {
-        id: 'starter',
+        name: 'Starter Plan',
         min_amount: 2,
         max_amount: 20,
       },
       {
-        id: 'premium', 
+        name: 'Premium Plan',
         min_amount: 20,
         max_amount: 100,
       },
       {
-        id: 'vip',
+        name: 'VIP Plan',
         min_amount: 100,
         max_amount: 10000,
       },
@@ -135,16 +158,16 @@ export async function updateInvestmentPlans() {
           min_amount: update.min_amount,
           max_amount: update.max_amount,
         })
-        .eq('id', update.id);
+        .eq('name', update.name);
 
       if (error) {
-        console.error(`Error updating plan ${update.id}:`, error);
+        console.error(`Error updating plan ${update.name}:`, error);
       } else {
-        console.log(`Updated plan ${update.id} successfully`);
+        console.log(`Updated plan ${update.name} successfully`);
       }
     }
   } catch (error) {
     console.error('Error updating investment plans:', error);
-    throw error;
+    // Don't throw error, just log it
   }
 }

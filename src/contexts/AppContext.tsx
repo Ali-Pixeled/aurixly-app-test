@@ -111,28 +111,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'SET_LOADING', payload: true });
         console.log('Initializing investment plans...');
         
-        // First try to get existing plans
-        let plans = await getAllInvestmentPlans();
-        
-        // If no plans exist, initialize them
-        if (plans.length === 0) {
-          console.log('No plans found, initializing...');
-          await initializeInvestmentPlans();
-          plans = await getAllInvestmentPlans();
-        }
-        
-        // Update plans with new amounts if needed
-        if (plans.length > 0) {
-          await updateInvestmentPlans();
-          plans = await getAllInvestmentPlans();
-        }
+        // Get investment plans (this will handle initialization internally)
+        const plans = await getAllInvestmentPlans();
         
         console.log('Investment plans loaded:', plans);
         dispatch({ type: 'SET_INVESTMENT_PLANS', payload: plans });
         dispatch({ type: 'SET_ERROR', payload: null });
       } catch (error) {
         console.error('Error initializing investment plans:', error);
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to load investment plans' });
+        // Set empty plans instead of error to allow app to continue
+        dispatch({ type: 'SET_INVESTMENT_PLANS', payload: [] });
+        dispatch({ type: 'SET_ERROR', payload: null });
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false });
       }
