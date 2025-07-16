@@ -72,29 +72,46 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
   ];
 
   const renderHomeContent = () => (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold mb-2">Welcome back, {currentUser.name}!</h1>
-            <p className="text-indigo-100">Track your investments and grow your wealth</p>
+            <div className="flex items-center space-x-2 mb-3">
+              <span className="text-3xl">👋</span>
+              <h1 className="text-3xl font-bold">Welcome back, {currentUser.name}!</h1>
+            </div>
+            <p className="text-indigo-100 text-lg">Track your investments and grow your wealth</p>
+            <div className="mt-4 flex items-center space-x-4 text-sm">
+              <div className="bg-white bg-opacity-20 rounded-full px-3 py-1">
+                <span>🚀 Growing Portfolio</span>
+              </div>
+              <div className="bg-white bg-opacity-20 rounded-full px-3 py-1">
+                <span>💎 Premium Member</span>
+              </div>
+            </div>
           </div>
           <div className="hidden sm:block">
-            <TrendingUp className="h-12 w-12 text-indigo-200" />
+            <div className="bg-white bg-opacity-20 rounded-full p-4 animate-pulse-glow">
+              <TrendingUp className="h-12 w-12 text-white" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <div key={stat.title} className="bg-white rounded-xl shadow-sm p-4 lg:p-6 border border-gray-100">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <div 
+            key={stat.title} 
+            className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 transform hover:scale-105 hover:shadow-xl transition-all duration-300 animate-slide-up"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
             <div className="flex items-center justify-between mb-3">
-              <div className={`p-2 lg:p-3 rounded-lg ${stat.color}`}>
-                <stat.icon className="h-4 w-4 lg:h-6 lg:w-6 text-white" />
+              <div className={`p-3 rounded-xl ${stat.color} shadow-lg`}>
+                <stat.icon className="h-6 w-6 text-white" />
               </div>
-              <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
                 stat.changeType === 'positive' 
                   ? 'bg-green-100 text-green-800'
                   : stat.changeType === 'negative'
@@ -105,68 +122,82 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
               </span>
             </div>
             <div>
-              <p className="text-xs lg:text-sm text-gray-600 mb-1">{stat.title}</p>
-              <p className="text-lg lg:text-2xl font-bold text-gray-900">{stat.value}</p>
+              <p className="text-sm text-gray-600 mb-2">{stat.title}</p>
+              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <span className="mr-2">⚡</span>
+          Quick Actions
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <button
             onClick={() => onTabChange?.('exchange')}
-            className="flex flex-col items-center space-y-2 p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+            className="flex flex-col items-center space-y-3 p-6 bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
           >
-            <Plus className="h-6 w-6 text-green-600" />
-            <span className="text-sm font-medium text-green-700">Deposit</span>
+            <div className="bg-green-500 rounded-full p-3">
+              <Plus className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-sm font-bold text-green-700">Deposit</span>
           </button>
           <button
             onClick={() => onTabChange?.('exchange')}
-            className="flex flex-col items-center space-y-2 p-4 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+            className="flex flex-col items-center space-y-3 p-6 bg-gradient-to-br from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
           >
-            <Minus className="h-6 w-6 text-red-600" />
-            <span className="text-sm font-medium text-red-700">Withdraw</span>
+            <div className="bg-red-500 rounded-full p-3">
+              <Minus className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-sm font-bold text-red-700">Withdraw</span>
           </button>
           <button
             onClick={() => onTabChange?.('invest')}
-            className="flex flex-col items-center space-y-2 p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+            className="flex flex-col items-center space-y-3 p-6 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
           >
-            <TrendingUp className="h-6 w-6 text-blue-600" />
-            <span className="text-sm font-medium text-blue-700">Invest</span>
+            <div className="bg-blue-500 rounded-full p-3">
+              <TrendingUp className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-sm font-bold text-blue-700">Invest</span>
           </button>
           <button
             onClick={() => onTabChange?.('transactions')}
-            className="flex flex-col items-center space-y-2 p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+            className="flex flex-col items-center space-y-3 p-6 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
           >
-            <Eye className="h-6 w-6 text-purple-600" />
-            <span className="text-sm font-medium text-purple-700">History</span>
+            <div className="bg-purple-500 rounded-full p-3">
+              <Eye className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-sm font-bold text-purple-700">History</span>
           </button>
         </div>
       </div>
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Recent Transactions</h4>
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 animate-slide-up">
+          <h4 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+            <span className="mr-2">📊</span>
+            Recent Transactions
+          </h4>
           <div className="space-y-3">
             {state.transactions
               .filter(t => t.userId === currentUser.id)
               .slice(0, 3)
               .map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between py-2">
+                <div key={transaction.id} className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                   <div className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-lg ${
+                    <div className={`p-2 rounded-full ${
                       transaction.type === 'deposit' || transaction.type === 'profit' 
-                        ? 'bg-green-100' 
-                        : 'bg-red-100'
+                        ? 'bg-green-500' 
+                        : 'bg-red-500'
                     }`}>
                       {transaction.type === 'deposit' || transaction.type === 'profit' ? (
-                        <ArrowDownRight className="h-4 w-4 text-green-600" />
+                        <ArrowDownRight className="h-4 w-4 text-white" />
                       ) : (
-                        <ArrowUpRight className="h-4 w-4 text-red-600" />
+                        <ArrowUpRight className="h-4 w-4 text-white" />
                       )}
                     </div>
                     <div>
@@ -174,7 +205,7 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
                       <p className="text-xs text-gray-500">{transaction.createdAt.toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <span className={`text-sm font-medium ${
+                  <span className={`text-sm font-bold ${
                     transaction.type === 'deposit' || transaction.type === 'profit' 
                       ? 'text-green-600' 
                       : 'text-red-600'
@@ -185,30 +216,45 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
                 </div>
               ))}
             {state.transactions.filter(t => t.userId === currentUser.id).length === 0 && (
-              <p className="text-sm text-gray-500 text-center py-4">No transactions yet</p>
+              <div className="text-center py-8">
+                <div className="text-4xl mb-2">💳</div>
+                <p className="text-sm text-gray-500">No transactions yet</p>
+              </div>
             )}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Active Investments</h4>
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 animate-slide-up" style={{ animationDelay: '200ms' }}>
+          <h4 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+            <span className="mr-2">💰</span>
+            Active Investments
+          </h4>
           <div className="space-y-3">
             {activeInvestments.slice(0, 3).map((investment) => {
               const plan = state.investmentPlans.find(p => p.id === investment.planId);
               return (
-                <div key={investment.id} className="flex items-center justify-between py-2">
+                <div key={investment.id} className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                   <div>
                     <p className="text-sm font-medium text-gray-900">{plan?.name}</p>
                     <p className="text-xs text-gray-500">${investment.amount.toFixed(2)} invested</p>
                   </div>
-                  <span className="text-sm font-medium text-green-600">
+                  <span className="text-sm font-bold text-green-600">
                     +${investment.totalEarned.toFixed(2)}
                   </span>
                 </div>
               );
             })}
             {activeInvestments.length === 0 && (
-              <p className="text-sm text-gray-500 text-center py-4">No active investments</p>
+              <div className="text-center py-8">
+                <div className="text-4xl mb-2">📈</div>
+                <p className="text-sm text-gray-500">No active investments</p>
+                <button
+                  onClick={() => onTabChange?.('invest')}
+                  className="mt-3 text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                >
+                  Start investing →
+                </button>
+              </div>
             )}
           </div>
         </div>

@@ -119,8 +119,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'SET_ERROR', payload: null });
       } catch (error) {
         console.error('Error initializing investment plans:', error);
-        // Set empty plans instead of error to allow app to continue
-        dispatch({ type: 'SET_INVESTMENT_PLANS', payload: [] });
+        // Set fallback plans instead of error to allow app to continue
+        const fallbackPlans = [
+          {
+            id: 'starter-fallback',
+            name: 'Starter Plan',
+            minAmount: 2,
+            maxAmount: 1000,
+            hourlyRate: 0.089,
+            duration: 336,
+            totalReturn: 30,
+            featured: false,
+          },
+          {
+            id: 'advanced-fallback',
+            name: 'Advanced Plan',
+            minAmount: 20,
+            maxAmount: 5000,
+            hourlyRate: 0.074,
+            duration: 672,
+            totalReturn: 50,
+            featured: true,
+          },
+          {
+            id: 'professional-fallback',
+            name: 'Professional Plan',
+            minAmount: 50,
+            maxAmount: 10000,
+            hourlyRate: 0.099,
+            duration: 1008,
+            totalReturn: 100,
+            featured: false,
+          },
+        ];
+        dispatch({ type: 'SET_INVESTMENT_PLANS', payload: fallbackPlans });
         dispatch({ type: 'SET_ERROR', payload: null });
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false });
