@@ -21,28 +21,28 @@ export async function initializeInvestmentPlans() {
         {
           name: 'Starter Plan',
           min_amount: 2,
-          max_amount: 20,
-          hourly_rate: 0.06, // 20% over 2 weeks (336 hours) = 0.0595% per hour
+          max_amount: 1000,
+          hourly_rate: 0.089, // 30% over 2 weeks (336 hours) = 0.089% per hour
           duration: 336, // 2 weeks (14 days * 24 hours)
-          total_return: 20,
+          total_return: 30,
           featured: false,
         },
         {
-          name: 'Premium Plan',
+          name: 'Advanced Plan',
           min_amount: 20,
-          max_amount: 100,
-          hourly_rate: 0.089, // 30% over 2 weeks
-          duration: 336, // 2 weeks
-          total_return: 30,
+          max_amount: 5000,
+          hourly_rate: 0.074, // 50% over 4 weeks (672 hours) = 0.074% per hour
+          duration: 672, // 4 weeks (28 days * 24 hours)
+          total_return: 50,
           featured: true,
         },
         {
-          name: 'VIP Plan',
-          min_amount: 100,
+          name: 'Professional Plan',
+          min_amount: 50,
           max_amount: 10000,
-          hourly_rate: 0.119, // 40% over 2 weeks
-          duration: 336, // 2 weeks
-          total_return: 40,
+          hourly_rate: 0.099, // 100% over 6 weeks (1008 hours) = 0.099% per hour
+          duration: 1008, // 6 weeks (42 days * 24 hours)
+          total_return: 100,
           featured: false,
         },
       ];

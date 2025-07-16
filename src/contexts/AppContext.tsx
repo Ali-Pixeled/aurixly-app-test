@@ -127,12 +127,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     };
 
+    console.log('AppProvider mounted, initializing plans...');
     initializePlans();
   }, []);
 
   // Handle user authentication and data loading
   useEffect(() => {
     const initializeUser = async () => {
+      console.log('initializeUser called, isLoaded:', isLoaded, 'clerkUser:', !!clerkUser);
       if (!isLoaded) return;
 
       try {
