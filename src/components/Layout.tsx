@@ -45,7 +45,7 @@ export function Layout({ children, activeTab = 'home', onTabChange }: LayoutProp
             
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700">{currentUser.name}</span>
+                <span className="text-sm text-gray-700 truncate max-w-32">{currentUser.name}</span>
               </div>
               
               <div className="flex items-center space-x-2 bg-green-50 px-3 py-1 rounded-full">
@@ -76,11 +76,11 @@ export function Layout({ children, activeTab = 'home', onTabChange }: LayoutProp
         </div>
       </nav>
 
-      {/* Mobile Header */}
+      {/* Mobile Header - Fixed and Improved */}
       <nav className="md:hidden bg-white shadow-lg border-b border-gray-200 backdrop-blur-sm bg-opacity-95 sticky top-0 z-40">
-        <div className="px-4 py-3">
+        <div className="px-3 py-2">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-shrink-0">
               <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg p-1.5">
                 <TrendingUp className="h-4 w-4 text-white" />
               </div>
@@ -88,16 +88,16 @@ export function Layout({ children, activeTab = 'home', onTabChange }: LayoutProp
               <span className="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full font-medium">BETA</span>
             </div>
             
-            <div className="flex items-center space-x-3">
-              <div className="text-right bg-green-50 px-2 py-1 rounded-lg">
+            <div className="flex items-center space-x-2 flex-shrink-0">
+              <div className="text-right bg-green-50 px-2 py-1 rounded-lg min-w-0">
                 <div className="text-xs text-gray-500">Balance</div>
-                <div className="text-sm font-semibold text-green-600">
+                <div className="text-sm font-semibold text-green-600 truncate">
                   ${currentUser.balance.toFixed(2)}
                 </div>
               </div>
               
               {currentUser.isAdmin && (
-                <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">
+                <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full whitespace-nowrap">
                   Admin
                 </span>
               )}
@@ -105,7 +105,7 @@ export function Layout({ children, activeTab = 'home', onTabChange }: LayoutProp
               <UserButton 
                 appearance={{
                   elements: {
-                    avatarBox: 'w-8 h-8'
+                    avatarBox: 'w-8 h-8 flex-shrink-0'
                   }
                 }}
               />
@@ -114,26 +114,26 @@ export function Layout({ children, activeTab = 'home', onTabChange }: LayoutProp
         </div>
       </nav>
       
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 pb-20 md:pb-8 animate-slide-up">
+      {/* Main Content - Fixed padding for mobile bottom nav */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 pb-24 md:pb-8 animate-slide-up min-h-screen">
         {children}
       </main>
 
-      {/* Bottom Navigation - Mobile Only */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg backdrop-blur-sm bg-opacity-95 z-50">
+      {/* Bottom Navigation - Mobile Only - Fixed positioning */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg backdrop-blur-sm bg-opacity-95 z-50 safe-area-pb">
         <div className="grid grid-cols-5 h-16">
           {bottomNavItems.map((item) => (
             <button
               key={item.id}
               onClick={() => onTabChange?.(item.id)}
-              className={`flex flex-col items-center justify-center space-y-1 transition-all duration-300 transform active:scale-95 ${
+              className={`flex flex-col items-center justify-center space-y-1 transition-all duration-300 transform active:scale-95 px-1 ${
                 activeTab === item.id
                   ? 'text-indigo-600 bg-indigo-50 scale-105'
                   : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }`}
             >
-              <item.icon className="h-5 w-5" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <item.icon className="h-5 w-5 flex-shrink-0" />
+              <span className="text-xs font-medium truncate w-full text-center">{item.label}</span>
             </button>
           ))}
         </div>
