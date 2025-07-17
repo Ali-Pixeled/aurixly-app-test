@@ -1,9 +1,9 @@
 import React from 'react';
 import { useApp } from '../contexts/AppContext';
-import { TrendingUp, Clock, DollarSign } from 'lucide-react';
+import { TrendingUp, Clock, DollarSign, ArrowRight, CheckCircle } from 'lucide-react';
 
 export function Portfolio() {
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
   const { currentUser, investments, investmentPlans } = state;
 
   if (!currentUser) return null;
@@ -11,6 +11,45 @@ export function Portfolio() {
   const userInvestments = investments.filter(inv => inv.userId === currentUser.id);
   const activeInvestments = userInvestments.filter(inv => inv.isActive);
   const completedInvestments = userInvestments.filter(inv => !inv.isActive);
+
+  const handleWithdrawProfit = (investment: any) => {
+    if (!investment.canWithdraw) {
+      alert('Investment period not completed yet!');
+      return;
+    }
+
+    // Transfer profit to main balance
+    const updatedUser = {
+      ...currentUser,
+      balance: currentUser.balance + investment.currentProfit,
+      profitBalance: (currentUser.profitBalance || 0) - investment.currentProfit,
+      totalEarned: currentUser.totalEarned + investment.currentProfit,
+    };
+
+    // Create transaction
+    const transaction = {
+      id: Date.now().toString(),
+      userId: currentUser.id,
+      type: 'profit' as const,
+      amount: investment.currentProfit,
+      status: 'completed' as const,
+      description: `Profit withdrawal from ${investmentPlans.find(p => p.id === investment.planId)?.name}`,
+      createdAt: new Date(),
+    };
+
+    // Update investment
+    const updatedInvestment = {
+      ...investment,
+      currentProfit: 0,
+      canWithdraw: false,
+    };
+
+    dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+    dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
+    dispatch({ type: 'UPDATE_INVESTMENT', payload: updatedInvestment });
+
+    alert('Profit successfully transferred to your main balance!');
+  };
 
   const getTimeRemaining = (endDate: Date) => {
     const now = new Date();
@@ -40,43 +79,53 @@ export function Portfolio() {
       </div>
 
       {/* Portfolio Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100">Active Investments</p>
+              <p className="text-blue-100 text-sm">Active Investments</p>
               <p className="text-2xl font-bold">{activeInvestments.length}</p>
             </div>
             <TrendingUp className="h-8 w-8 text-blue-200" />
           </div>
         </div>
         
-        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6">
+        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100">Total Invested</p>
+              <p className="text-green-100 text-sm">Total Invested</p>
               <p className="text-2xl font-bold">${currentUser.totalInvested.toFixed(2)}</p>
             </div>
             <DollarSign className="h-8 w-8 text-green-200" />
           </div>
         </div>
         
-        <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg p-6">
+        <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-yellow-100">Total Earned</p>
+              <p className="text-yellow-100 text-sm">Current Profits</p>
               <p className="text-2xl font-bold">
-                ${userInvestments.reduce((sum, inv) => sum + inv.totalEarned, 0).toFixed(2)}
+                ${userInvestments.reduce((sum, inv) => sum + inv.currentProfit, 0).toFixed(2)}
               </p>
             </div>
             <TrendingUp className="h-8 w-8 text-yellow-200" />
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-100 text-sm">Total Earned</p>
+              <p className="text-2xl font-bold">${currentUser.totalEarned.toFixed(2)}</p>
+            </div>
+            <CheckCircle className="h-8 w-8 text-purple-200" />
           </div>
         </div>
       </div>
 
       {/* Active Investments */}
       {activeInvestments.length > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Active Investments</h3>
           <div className="space-y-4">
             {activeInvestments.map((investment) => {
@@ -84,7 +133,7 @@ export function Portfolio() {
               const progress = getProgress(investment.startDate, investment.endDate);
               
               return (
-                <div key={investment.id} className="border border-gray-200 rounded-lg p-4">
+                <div key={investment.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <h4 className="font-medium text-gray-900">{plan?.name}</h4>
@@ -97,7 +146,7 @@ export function Portfolio() {
                         ${investment.amount.toFixed(2)}
                       </p>
                       <p className="text-sm text-green-600">
-                        +${investment.totalEarned.toFixed(2)} earned
+                        +${investment.currentProfit.toFixed(2)} earned
                       </p>
                     </div>
                   </div>
@@ -115,17 +164,24 @@ export function Portfolio() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between mt-3 text-sm">
-                    <div className="flex items-center space-x-4">
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center space-x-4 text-sm">
                       <span className="text-gray-600">Rate: {plan?.hourlyRate}%/hour</span>
-                      <span className="text-gray-600">
-                        <Clock className="h-4 w-4 inline mr-1" />
+                      <span className="text-gray-600 flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
                         {getTimeRemaining(investment.endDate)}
                       </span>
                     </div>
-                    <span className="text-green-600 font-medium">
-                      Expected: ${(investment.amount * (plan?.totalReturn || 0) / 100).toFixed(2)}
-                    </span>
+                    
+                    {investment.canWithdraw && (
+                      <button
+                        onClick={() => handleWithdrawProfit(investment)}
+                        className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all flex items-center space-x-2"
+                      >
+                        <span>Withdraw Profit</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               );
@@ -136,14 +192,14 @@ export function Portfolio() {
 
       {/* Completed Investments */}
       {completedInvestments.length > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Completed Investments</h3>
           <div className="space-y-4">
             {completedInvestments.map((investment) => {
               const plan = investmentPlans.find(p => p.id === investment.planId);
               
               return (
-                <div key={investment.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div key={investment.id} className="border border-gray-200 rounded-xl p-4 bg-gray-50">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-medium text-gray-900">{plan?.name}</h4>

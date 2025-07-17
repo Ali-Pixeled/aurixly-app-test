@@ -4,6 +4,7 @@ export interface User {
   email: string;
   name: string;
   balance: number;
+  profitBalance: number;
   totalInvested: number;
   totalEarned: number;
   isAdmin: boolean;
@@ -19,8 +20,10 @@ export interface Investment {
   endDate: Date;
   hourlyRate: number;
   totalEarned: number;
+  currentProfit: number;
   isActive: boolean;
   lastPayout: Date;
+  canWithdraw: boolean;
 }
 
 export interface InvestmentPlan {

@@ -9,6 +9,16 @@
   }
 }
 
+/* Ensure body takes full height and prevents overflow issues */
+html, body, #root {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  position: relative;
+}
+
 /* Improved mobile scrolling */
 html {
   -webkit-overflow-scrolling: touch;
@@ -43,6 +53,39 @@ body {
 }
 
 /* Smooth animations */
+@keyframes smooth-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes smooth-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes smooth-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -97,6 +140,18 @@ body {
   animation: slide-up 0.5s ease-out forwards;
 }
 
+.animate-smooth-fade-in {
+  animation: smooth-fade-in 0.4s ease-out forwards;
+}
+
+.animate-smooth-scale-in {
+  animation: smooth-scale-in 0.3s ease-out forwards;
+}
+
+.animate-smooth-slide-up {
+  animation: smooth-slide-up 0.4s ease-out forwards;
+}
+
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
@@ -140,9 +195,21 @@ body {
     animation: none;
   }
   
+  /* Use simpler animations on mobile */
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-slide-up {
+    animation: smooth-fade-in 0.3s ease-out forwards;
+  }
+  
   /* Optimize shadows for mobile */
   .shadow-xl {
     box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Ensure proper spacing for fixed bottom nav */
+  .mobile-content {
+    padding-bottom: 5rem;
   }
 }
 

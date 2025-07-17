@@ -13,7 +13,9 @@ export async function createInvestment(investmentData: Omit<Investment, 'id'>) {
         end_date: investmentData.endDate.toISOString(),
         hourly_rate: investmentData.hourlyRate,
         total_earned: investmentData.totalEarned,
+        current_profit: investmentData.currentProfit || 0,
         is_active: investmentData.isActive,
+        can_withdraw: investmentData.canWithdraw || false,
         last_payout: investmentData.lastPayout.toISOString(),
       })
       .select()
@@ -30,7 +32,9 @@ export async function createInvestment(investmentData: Omit<Investment, 'id'>) {
       endDate: new Date(data.end_date),
       hourlyRate: data.hourly_rate,
       totalEarned: data.total_earned,
+      currentProfit: data.current_profit || 0,
       isActive: data.is_active,
+      canWithdraw: data.can_withdraw || false,
       lastPayout: new Date(data.last_payout),
     } as Investment;
   } catch (error) {
@@ -58,7 +62,9 @@ export async function getUserInvestments(userId: string) {
       endDate: new Date(inv.end_date),
       hourlyRate: inv.hourly_rate,
       totalEarned: inv.total_earned,
+      currentProfit: inv.current_profit || 0,
       isActive: inv.is_active,
+      canWithdraw: inv.can_withdraw || false,
       lastPayout: new Date(inv.last_payout),
     })) as Investment[];
   } catch (error) {
@@ -73,7 +79,9 @@ export async function updateInvestment(investmentId: string, updates: Partial<In
     
     if (updates.amount !== undefined) updateData.amount = updates.amount;
     if (updates.totalEarned !== undefined) updateData.total_earned = updates.totalEarned;
+    if (updates.currentProfit !== undefined) updateData.current_profit = updates.currentProfit;
     if (updates.isActive !== undefined) updateData.is_active = updates.isActive;
+    if (updates.canWithdraw !== undefined) updateData.can_withdraw = updates.canWithdraw;
     if (updates.lastPayout) updateData.last_payout = updates.lastPayout.toISOString();
 
     const { data, error } = await supabase
@@ -94,7 +102,9 @@ export async function updateInvestment(investmentId: string, updates: Partial<In
       endDate: new Date(data.end_date),
       hourlyRate: data.hourly_rate,
       totalEarned: data.total_earned,
+      currentProfit: data.current_profit || 0,
       isActive: data.is_active,
+      canWithdraw: data.can_withdraw || false,
       lastPayout: new Date(data.last_payout),
     } as Investment;
   } catch (error) {
@@ -121,7 +131,9 @@ export async function getAllInvestments() {
       endDate: new Date(inv.end_date),
       hourlyRate: inv.hourly_rate,
       totalEarned: inv.total_earned,
+      currentProfit: inv.current_profit || 0,
       isActive: inv.is_active,
+      canWithdraw: inv.can_withdraw || false,
       lastPayout: new Date(inv.last_payout),
     })) as Investment[];
   } catch (error) {

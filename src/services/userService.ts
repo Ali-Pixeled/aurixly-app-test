@@ -10,6 +10,7 @@ export async function createUser(userData: { clerkId: string; email: string; nam
         email: userData.email,
         name: userData.name,
         balance: 100, // Starting bonus
+        profit_balance: 0,
         total_invested: 0,
         total_earned: 0,
         is_admin: false,
@@ -25,6 +26,7 @@ export async function createUser(userData: { clerkId: string; email: string; nam
       email: data.email,
       name: data.name,
       balance: data.balance,
+      profitBalance: data.profit_balance || 0,
       totalInvested: data.total_invested,
       totalEarned: data.total_earned,
       isAdmin: data.is_admin,
@@ -55,6 +57,7 @@ export async function getUserByClerkId(clerkId: string) {
       email: data.email,
       name: data.name,
       balance: data.balance,
+      profitBalance: data.profit_balance || 0,
       totalInvested: data.total_invested,
       totalEarned: data.total_earned,
       isAdmin: data.is_admin,
@@ -73,6 +76,7 @@ export async function updateUser(userId: string, updates: Partial<User>) {
     if (updates.email) updateData.email = updates.email;
     if (updates.name) updateData.name = updates.name;
     if (updates.balance !== undefined) updateData.balance = updates.balance;
+    if (updates.profitBalance !== undefined) updateData.profit_balance = updates.profitBalance;
     if (updates.totalInvested !== undefined) updateData.total_invested = updates.totalInvested;
     if (updates.totalEarned !== undefined) updateData.total_earned = updates.totalEarned;
     if (updates.isAdmin !== undefined) updateData.is_admin = updates.isAdmin;
@@ -92,6 +96,7 @@ export async function updateUser(userId: string, updates: Partial<User>) {
       email: data.email,
       name: data.name,
       balance: data.balance,
+      profitBalance: data.profit_balance || 0,
       totalInvested: data.total_invested,
       totalEarned: data.total_earned,
       isAdmin: data.is_admin,
@@ -118,6 +123,7 @@ export async function getAllUsers() {
       email: user.email,
       name: user.name,
       balance: user.balance,
+      profitBalance: user.profit_balance || 0,
       totalInvested: user.total_invested,
       totalEarned: user.total_earned,
       isAdmin: user.is_admin,
