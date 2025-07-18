@@ -196,14 +196,14 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
                     }`}>
                       {transaction.type === 'deposit' || transaction.type === 'profit' ? (
                         <ArrowDownRight className="h-3 w-3 md:h-4 md:w-4 text-white" />
-                        +${(investment.currentProfit || 0).toFixed(2)}
+                      ) : (
                         <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-white" />
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs md:text-sm font-medium text-gray-900 truncate">{transaction.description}</p>
                       <p className="text-xs text-gray-500">{transaction.createdAt.toLocaleDateString()}</p>
-                        ${(investment.amount || 0).toFixed(2)} invested
+                    </div>
                   </div>
                   <span className={`text-xs md:text-sm font-bold flex-shrink-0 ml-2 ${
                     transaction.type === 'deposit' || transaction.type === 'profit' 
