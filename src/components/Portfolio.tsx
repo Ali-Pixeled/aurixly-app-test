@@ -11,6 +11,9 @@ export function Portfolio() {
   const userInvestments = investments.filter(inv => inv.userId === currentUser.id);
   const activeInvestments = userInvestments.filter(inv => inv.isActive);
   const completedInvestments = userInvestments.filter(inv => !inv.isActive);
+  
+  // Safe calculation to prevent NaN values
+  const currentProfits = userInvestments.reduce((sum, inv) => sum + (inv.currentProfit || 0), 0);
 
   const handleWithdrawProfit = (investment: any) => {
     if (!investment.canWithdraw) {
@@ -105,7 +108,7 @@ export function Portfolio() {
             <div>
               <p className="text-yellow-100 text-sm">Current Profits</p>
               <p className="text-2xl font-bold">
-                ${userInvestments.reduce((sum, inv) => sum + inv.currentProfit, 0).toFixed(2)}
+                ${currentProfits.toFixed(2)}
               </p>
             </div>
             <TrendingUp className="h-8 w-8 text-yellow-200" />
@@ -143,10 +146,10 @@ export function Portfolio() {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-semibold text-gray-900">
-                        ${investment.amount.toFixed(2)}
+                        ${(investment.amount || 0).toFixed(2)}
                       </p>
                       <p className="text-sm text-green-600 font-medium animate-pulse">
-                        +${investment.currentProfit.toFixed(2)} earned
+                        +${(investment.currentProfit || 0).toFixed(2)} earned
                       </p>
                     </div>
                   </div>
@@ -209,10 +212,10 @@ export function Portfolio() {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-semibold text-gray-900">
-                        ${investment.amount.toFixed(2)}
+                        ${(investment.amount || 0).toFixed(2)}
                       </p>
                       <p className="text-sm text-green-600">
-                        +${investment.totalEarned.toFixed(2)} earned
+                        +${(investment.totalEarned || 0).toFixed(2)} earned
                       </p>
                     </div>
                   </div>

@@ -252,6 +252,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Live profit calculation - runs every 10 seconds
   useEffect(() => {
     if (!state.currentUser) return;
+    
+    console.log('Setting up profit calculation interval...');
 
     const interval = setInterval(() => {
       const activeInvestments = state.investments.filter(inv => 
@@ -264,18 +266,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const secondsPassed = Math.floor((now.getTime() - investment.lastPayout.getTime()) / 1000);
         
         if (secondsPassed >= 10) { // Update every 10 seconds
-          const hourlyProfit = investment.amount * (investment.hourlyRate / 100);
+          const hourlyProfit = (investment.amount || 0) * ((investment.hourlyRate || 0) / 100);
           const profitPerSecond = hourlyProfit / 3600; // Convert hourly to per second
-          const newProfit = investment.currentProfit + (profitPerSecond * secondsPassed);
+          const newProfit = (investment.currentProfit || 0) + (profitPerSecond * secondsPassed);
           
           // Check if investment is complete
           const isComplete = now >= investment.endDate;
           
+          // Calculate maximum possible profit
+          const maxProfit = (investment.amount || 0) * ((investment.hourlyRate || 0) * (investment.duration || 0) / 100);
+          const finalProfit = Math.min(newProfit, maxProfit);
+          
+          console.log(`Updating investment ${investment.id}: +$${(profitPerSecond * secondsPassed).toFixed(4)}`);
+          
           hasUpdates = true;
           return {
             ...investment,
-            currentProfit: Math.min(newProfit, investment.amount * (investment.hourlyRate * investment.duration / 100)),
-            totalEarned: Math.min(newProfit, investment.amount * (investment.hourlyRate * investment.duration / 100)),
+            currentProfit: finalProfit,
+            totalEarned: finalProfit,
             lastPayout: now,
             canWithdraw: isComplete,
             isActive: !isComplete,
