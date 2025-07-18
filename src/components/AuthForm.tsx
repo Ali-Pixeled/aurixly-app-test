@@ -76,38 +76,6 @@ export function AuthForm() {
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {isLogin ? 'Welcome Back' : 'Create Account'}
-              </h2>
-              <p className="text-gray-600 mt-2">
-                {isLogin ? 'Sign in to your account' : 'Start your investment journey'}
-              </p>
-            </div>
-
-            {/* Terms Notice for Sign Up */}
-            {!isLogin && (
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-800">
-                  By creating an account, you agree to our{' '}
-                  <button
-                    type="button"
-                    onClick={() => setShowTerms(true)}
-                    className="text-blue-600 hover:text-blue-500 underline font-medium"
-                  >
-                    Terms of Service
-                  </button>{' '}
-                  and{' '}
-                  <button
-                    type="button"
-                    onClick={() => setShowTerms(true)}
-                    className="text-blue-600 hover:text-blue-500 underline font-medium"
-                  >
-                    Privacy Policy
-                  </button>
-                </p>
-              </div>
-            )}
 
             {/* Clerk Auth Components */}
             <div className="space-y-4">
@@ -119,12 +87,12 @@ export function AuthForm() {
                     elements: {
                       formButtonPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-sm normal-case',
                       card: 'shadow-none border-none',
-                      headerTitle: 'hidden',
-                      headerSubtitle: 'hidden',
+                      headerTitle: 'text-2xl font-bold text-gray-900 mb-2',
+                      headerSubtitle: 'text-gray-600 mb-6',
                       socialButtonsBlockButton: 'border-gray-300 hover:bg-gray-50',
                       formFieldInput: 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500',
                       footerActionLink: 'text-indigo-600 hover:text-indigo-500',
-                      footer: 'hidden',
+                      footer: 'mt-6',
                     },
                     layout: {
                       socialButtonsPlacement: 'bottom',
@@ -132,6 +100,28 @@ export function AuthForm() {
                   }}
                 />
               ) : (
+                <div>
+                  {/* Terms Notice for Sign Up */}
+                  <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-sm text-blue-800">
+                      By creating an account, you agree to our{' '}
+                      <button
+                        type="button"
+                        onClick={() => setShowTerms(true)}
+                        className="text-blue-600 hover:text-blue-500 underline font-medium"
+                      >
+                        Terms of Service
+                      </button>{' '}
+                      and{' '}
+                      <button
+                        type="button"
+                        onClick={() => setShowTerms(true)}
+                        className="text-blue-600 hover:text-blue-500 underline font-medium"
+                      >
+                        Privacy Policy
+                      </button>
+                    </p>
+                  </div>
                 <SignUp 
                   routing="virtual"
                   signInUrl="#"
@@ -139,18 +129,19 @@ export function AuthForm() {
                     elements: {
                       formButtonPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-sm normal-case',
                       card: 'shadow-none border-none',
-                      headerTitle: 'hidden',
-                      headerSubtitle: 'hidden',
+                      headerTitle: 'text-2xl font-bold text-gray-900 mb-2',
+                      headerSubtitle: 'text-gray-600 mb-6',
                       socialButtonsBlockButton: 'border-gray-300 hover:bg-gray-50',
                       formFieldInput: 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500',
                       footerActionLink: 'text-indigo-600 hover:text-indigo-500',
-                      footer: 'hidden',
+                      footer: 'mt-6',
                     },
                     layout: {
                       socialButtonsPlacement: 'bottom',
                     }
                   }}
                 />
+                </div>
               )}
             </div>
 

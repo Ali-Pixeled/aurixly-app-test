@@ -145,7 +145,7 @@ export function Portfolio() {
                       <p className="text-lg font-semibold text-gray-900">
                         ${investment.amount.toFixed(2)}
                       </p>
-                      <p className="text-sm text-green-600">
+                      <p className="text-sm text-green-600 font-medium animate-pulse">
                         +${investment.currentProfit.toFixed(2)} earned
                       </p>
                     </div>

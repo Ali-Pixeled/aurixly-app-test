@@ -59,6 +59,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'SET_USERS':
       return { ...state, users: action.payload };
     case 'UPDATE_USER':
+      // Update user in database when balance changes
+      if (action.payload && state.currentUser?.id === action.payload.id) {
+        updateUser(action.payload.id, action.payload).catch(console.error);
+      }
       return {
         ...state,
         users: state.users.map(user =>
@@ -69,11 +73,15 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'SET_INVESTMENTS':
       return { ...state, investments: action.payload };
     case 'ADD_INVESTMENT':
+      // Save investment to database
+      createInvestment(action.payload).catch(console.error);
       return {
         ...state,
         investments: [...state.investments, action.payload],
       };
     case 'UPDATE_INVESTMENT':
+      // Update investment in database
+      updateInvestment(action.payload.id, action.payload).catch(console.error);
       return {
         ...state,
         investments: state.investments.map(inv =>
@@ -83,6 +91,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'SET_TRANSACTIONS':
       return { ...state, transactions: action.payload };
     case 'ADD_TRANSACTION':
+      // Save transaction to database
+      createTransaction(action.payload).catch(console.error);
       return {
         ...state,
         transactions: [...state.transactions, action.payload],
@@ -239,6 +249,50 @@ export function AppProvider({ children }: { children: ReactNode }) {
     initializeUser();
   }, [isLoaded, clerkUser]);
 
+  // Live profit calculation - runs every 10 seconds
+  useEffect(() => {
+    if (!state.currentUser) return;
+
+    const interval = setInterval(() => {
+      const activeInvestments = state.investments.filter(inv => 
+        inv.userId === state.currentUser!.id && inv.isActive
+      );
+
+      let hasUpdates = false;
+      const updatedInvestments = activeInvestments.map(investment => {
+        const now = new Date();
+        const secondsPassed = Math.floor((now.getTime() - investment.lastPayout.getTime()) / 1000);
+        
+        if (secondsPassed >= 10) { // Update every 10 seconds
+          const hourlyProfit = investment.amount * (investment.hourlyRate / 100);
+          const profitPerSecond = hourlyProfit / 3600; // Convert hourly to per second
+          const newProfit = investment.currentProfit + (profitPerSecond * secondsPassed);
+          
+          // Check if investment is complete
+          const isComplete = now >= investment.endDate;
+          
+          hasUpdates = true;
+          return {
+            ...investment,
+            currentProfit: Math.min(newProfit, investment.amount * (investment.hourlyRate * investment.duration / 100)),
+            totalEarned: Math.min(newProfit, investment.amount * (investment.hourlyRate * investment.duration / 100)),
+            lastPayout: now,
+            canWithdraw: isComplete,
+            isActive: !isComplete,
+          };
+        }
+        return investment;
+      });
+
+      if (hasUpdates) {
+        updatedInvestments.forEach(investment => {
+          dispatch({ type: 'UPDATE_INVESTMENT', payload: investment });
+        });
+      }
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [state.currentUser, state.investments]);
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}

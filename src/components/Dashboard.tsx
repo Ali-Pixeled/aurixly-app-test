@@ -236,11 +236,16 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
                 <div key={investment.id} className="flex items-center justify-between py-2 md:py-3 px-3 md:px-4 bg-gray-50 rounded-lg md:rounded-xl hover:bg-gray-100 transition-colors">
                   <div className="min-w-0 flex-1">
                     <p className="text-xs md:text-sm font-medium text-gray-900 truncate">{plan?.name}</p>
-                    <p className="text-xs text-gray-500">${investment.amount.toFixed(2)} invested</p>
+                    <p className="text-xs text-gray-500">
+                      ${investment.amount.toFixed(2)} invested
+                    </p>
                   </div>
-                  <span className="text-xs md:text-sm font-bold text-green-600 flex-shrink-0 ml-2">
-                    +${investment.totalEarned.toFixed(2)}
-                  </span>
+                  <div className="text-right flex-shrink-0 ml-2">
+                    <span className="text-xs md:text-sm font-bold text-green-600 animate-pulse">
+                      +${investment.currentProfit.toFixed(2)}
+                    </span>
+                    <p className="text-xs text-gray-500">Live</p>
+                  </div>
                 </div>
               );
             })}

@@ -7,7 +7,6 @@ export function Profile() {
   const { currentUser } = state;
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-    name: currentUser?.name || '',
     email: currentUser?.email || '',
   });
 
@@ -16,7 +15,6 @@ export function Profile() {
   const handleSave = () => {
     const updatedUser = {
       ...currentUser,
-      name: editForm.name,
       email: editForm.email,
     };
 
@@ -113,17 +111,6 @@ export function Profile() {
 
         {isEditing ? (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
-              </label>
-              <input
-                type="text"
-                value={editForm.name}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -161,6 +148,7 @@ export function Profile() {
               <div>
                 <p className="text-sm text-gray-600">Full Name</p>
                 <p className="font-medium text-gray-900">{currentUser.name}</p>
+                <p className="text-xs text-gray-500 mt-1">Name cannot be changed</p>
               </div>
             </div>
 

@@ -295,11 +295,11 @@ export function InvestmentPlans() {
                     <p className="text-xs text-gray-600">{getDurationText(plan.duration)}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <TrendingUp className="h-5 w-5 text-purple-500" />
+                <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                  <TrendingUp className="h-5 w-5 text-green-600" />
                   <div>
-                    <span className="text-sm font-medium text-gray-900">Hourly Rate</span>
-                    <p className="text-xs text-gray-600">{plan.hourlyRate.toFixed(3)}%</p>
+                    <span className="text-sm font-medium text-green-900">Live Profit Tracking</span>
+                    <p className="text-xs text-green-700">Real-time earnings updates</p>
                   </div>
                 </div>
               </div>
