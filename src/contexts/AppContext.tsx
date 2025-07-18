@@ -1,28 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { AppState, User, Investment, InvestmentPlan, Transaction } from '../types';
-import { 
-  createUser, 
-  getUserByClerkId, 
-  updateUser, 
-  getAllUsers 
-} from '../services/userService';
-import { 
-  createInvestment, 
-  getUserInvestments, 
-  updateInvestment, 
-  getAllInvestments 
-} from '../services/investmentService';
-import { 
-  createTransaction, 
-  getUserTransactions, 
-  getAllTransactions 
-} from '../services/transactionService';
-import { 
-  initializeInvestmentPlans, 
-  getAllInvestmentPlans,
-  updateInvestmentPlans
-} from '../services/investmentPlanService';
 
 type AppAction =
   | { type: 'SET_USER'; payload: User | null }
@@ -36,6 +14,7 @@ type AppAction =
   | { type: 'SET_INVESTMENT_PLANS'; payload: InvestmentPlan[] }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'SET_THEME'; payload: 'light' | 'dark' }
   | { type: 'LOGOUT' };
 
 const initialState: AppState = {
@@ -45,6 +24,7 @@ const initialState: AppState = {
   investmentPlans: [],
   transactions: [],
   isLoading: false,
+  theme: 'light',
 };
 
 const AppContext = createContext<{
@@ -55,13 +35,16 @@ const AppContext = createContext<{
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case 'SET_USER':
-      return { ...state, currentUser: action.payload };
-    case 'SET_USERS':
       return { ...state, users: action.payload };
     case 'UPDATE_USER':
       // Update user in database when balance changes
-      if (action.payload && state.currentUser?.id === action.payload.id) {
-        updateUser(action.payload.id, action.payload).catch(console.error);
+      if (action.payload) {
+        // Save to localStorage
+        const storedUsers = JSON.parse(localStorage.getItem('aurixly_users') || '[]');
+        const updatedUsers = storedUsers.map((u: User) => 
+          u.id === action.payload.id ? action.payload : u
+        );
+        localStorage.setItem('aurixly_users', JSON.stringify(updatedUsers));
       }
       return {
         ...state,
@@ -72,37 +55,51 @@ function appReducer(state: AppState, action: AppAction): AppState {
       };
     case 'SET_INVESTMENTS':
       return { ...state, investments: action.payload };
-    case 'ADD_INVESTMENT':
-      // Save investment to database
       createInvestment(action.payload).catch(console.error);
       return {
         ...state,
         investments: [...state.investments, action.payload],
       };
+      // Save to localStorage
+      if (state.currentUser) {
+        const updatedInvestments = [...state.investments, action.payload];
+        localStorage.setItem(`aurixly_investments_${state.currentUser.id}`, JSON.stringify(updatedInvestments));
+      }
     case 'UPDATE_INVESTMENT':
       // Update investment in database
-      updateInvestment(action.payload.id, action.payload).catch(console.error);
       return {
         ...state,
         investments: state.investments.map(inv =>
           inv.id === action.payload.id ? action.payload : inv
         ),
       };
+      // Save to localStorage
+      if (state.currentUser) {
+        const updatedInvestments = state.investments.map(inv =>
+          inv.id === action.payload.id ? action.payload : inv
+        );
+        localStorage.setItem(`aurixly_investments_${state.currentUser.id}`, JSON.stringify(updatedInvestments));
+      }
     case 'SET_TRANSACTIONS':
       return { ...state, transactions: action.payload };
     case 'ADD_TRANSACTION':
-      // Save transaction to database
-      createTransaction(action.payload).catch(console.error);
       return {
         ...state,
         transactions: [...state.transactions, action.payload],
       };
+      // Save to localStorage
+      if (state.currentUser) {
+        const updatedTransactions = [...state.transactions, action.payload];
+        localStorage.setItem(`aurixly_transactions_${state.currentUser.id}`, JSON.stringify(updatedTransactions));
+      }
     case 'SET_INVESTMENT_PLANS':
       return { ...state, investmentPlans: action.payload };
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'SET_ERROR':
       return { ...state, error: action.payload };
+    case 'SET_THEME':
+      return { ...state, theme: action.payload };
     case 'LOGOUT':
       return { ...state, currentUser: null };
     default:
@@ -114,147 +111,91 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const { user: clerkUser, isLoaded } = useUser();
 
-  // Initialize investment plans first (independent of user)
+  // Initialize investment plans with fallback data
   useEffect(() => {
-    const initializePlans = async () => {
-      try {
-        dispatch({ type: 'SET_LOADING', payload: true });
-        console.log('Initializing investment plans...');
-        
-        // Get investment plans (this will handle initialization internally)
-        const plans = await getAllInvestmentPlans();
-        
-        console.log('Investment plans loaded:', plans);
-        dispatch({ type: 'SET_INVESTMENT_PLANS', payload: plans });
-        dispatch({ type: 'SET_ERROR', payload: null });
-      } catch (error) {
-        console.error('Error initializing investment plans:', error);
-        // Set fallback plans instead of error to allow app to continue
-        const fallbackPlans = [
-          {
-            id: 'starter-fallback',
-            name: 'Starter Plan',
-            minAmount: 2,
-            maxAmount: 1000,
-            hourlyRate: 0.089,
-            duration: 336,
-            totalReturn: 30,
-            featured: false,
-          },
-          {
-            id: 'advanced-fallback',
-            name: 'Advanced Plan',
-            minAmount: 20,
-            maxAmount: 5000,
-            hourlyRate: 0.074,
-            duration: 672,
-            totalReturn: 50,
-            featured: true,
-          },
-          {
-            id: 'professional-fallback',
-            name: 'Professional Plan',
-            minAmount: 50,
-            maxAmount: 10000,
-            hourlyRate: 0.099,
-            duration: 1008,
-            totalReturn: 100,
-            featured: false,
-          },
-        ];
-        dispatch({ type: 'SET_INVESTMENT_PLANS', payload: fallbackPlans });
-        dispatch({ type: 'SET_ERROR', payload: null });
-      } finally {
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    };
-
-    console.log('AppProvider mounted, initializing plans...');
-    initializePlans();
+    // Use local fallback plans to avoid Supabase errors
+    const fallbackPlans = [
+      {
+        id: 'starter',
+        name: 'Starter Plan',
+        minAmount: 2,
+        maxAmount: 20,
+        hourlyRate: 0.0595, // 20% over 2 weeks (336 hours)
+        duration: 336,
+        totalReturn: 20,
+        featured: false,
+      },
+      {
+        id: 'premium',
+        name: 'Premium Plan',
+        minAmount: 20,
+        maxAmount: 100,
+        hourlyRate: 0.0893, // 30% over 2 weeks
+        duration: 336,
+        totalReturn: 30,
+        featured: true,
+      },
+      {
+        id: 'vip',
+        name: 'VIP Plan',
+        minAmount: 100,
+        maxAmount: 10000,
+        hourlyRate: 0.119, // 40% over 2 weeks
+        duration: 336,
+        totalReturn: 40,
+        featured: false,
+      },
+    ];
+    dispatch({ type: 'SET_INVESTMENT_PLANS', payload: fallbackPlans });
   }, []);
 
-  // Handle user authentication and data loading
+  // Handle user authentication with local storage
   useEffect(() => {
-    const initializeUser = async () => {
-      console.log('initializeUser called, isLoaded:', isLoaded, 'clerkUser:', !!clerkUser);
-      if (!isLoaded) return;
+    if (!isLoaded) return;
 
-      try {
-        dispatch({ type: 'SET_LOADING', payload: true });
-
-        if (clerkUser) {
-          console.log('Initializing user:', clerkUser.id);
-          
-          try {
-            let user = await getUserByClerkId(clerkUser.id);
-            
-            if (!user) {
-              // Create new user if doesn't exist
-              const userData = {
-                clerkId: clerkUser.id,
-                email: clerkUser.emailAddresses[0]?.emailAddress || '',
-                name: clerkUser.fullName || clerkUser.firstName || 'User',
-              };
-              console.log('Creating new user:', userData);
-              user = await createUser(userData);
-            }
-
-            console.log('User loaded:', user);
-            dispatch({ type: 'SET_USER', payload: user });
-
-            // Load user-specific data
-            try {
-              const userInvestments = await getUserInvestments(user.id);
-              const userTransactions = await getUserTransactions(user.id);
-              
-              dispatch({ type: 'SET_INVESTMENTS', payload: userInvestments });
-              dispatch({ type: 'SET_TRANSACTIONS', payload: userTransactions });
-            } catch (error) {
-              console.error('Error loading user data:', error);
-            }
-
-            // Load admin data if user is admin
-            if (user.isAdmin) {
-              try {
-                const allUsers = await getAllUsers();
-                const allInvestments = await getAllInvestments();
-                const allTransactions = await getAllTransactions();
-                
-                dispatch({ type: 'SET_USERS', payload: allUsers });
-                dispatch({ type: 'SET_INVESTMENTS', payload: allInvestments });
-                dispatch({ type: 'SET_TRANSACTIONS', payload: allTransactions });
-              } catch (error) {
-                console.error('Error loading admin data:', error);
-              }
-            }
-          } catch (error) {
-            console.error('Error handling user authentication:', error);
-            dispatch({ type: 'SET_ERROR', payload: 'Failed to load user data' });
-          }
-        } else {
-          // User is not logged in, clear user data but keep investment plans
-          dispatch({ type: 'SET_USER', payload: null });
-          dispatch({ type: 'SET_INVESTMENTS', payload: [] });
-          dispatch({ type: 'SET_TRANSACTIONS', payload: [] });
-          dispatch({ type: 'SET_USERS', payload: [] });
-        }
-      } catch (error) {
-        console.error('Error initializing user:', error);
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to initialize application' });
-      } finally {
-        dispatch({ type: 'SET_LOADING', payload: false });
+    if (clerkUser) {
+      // Create or get user from localStorage
+      const userId = clerkUser.id;
+      const storedUsers = JSON.parse(localStorage.getItem('aurixly_users') || '[]');
+      
+      let user = storedUsers.find((u: User) => u.clerkId === userId);
+      
+      if (!user) {
+        // Create new user
+        user = {
+          id: userId,
+          clerkId: userId,
+          email: clerkUser.emailAddresses[0]?.emailAddress || '',
+          name: clerkUser.fullName || clerkUser.firstName || 'User',
+          balance: 100, // Starting bonus
+          profitBalance: 0,
+          totalInvested: 0,
+          totalEarned: 0,
+          isAdmin: false,
+          createdAt: new Date(),
+        };
+        
+        storedUsers.push(user);
+        localStorage.setItem('aurixly_users', JSON.stringify(storedUsers));
       }
-    };
 
-    initializeUser();
+      dispatch({ type: 'SET_USER', payload: user });
+
+      // Load user data from localStorage
+      const userInvestments = JSON.parse(localStorage.getItem(`aurixly_investments_${userId}`) || '[]');
+      const userTransactions = JSON.parse(localStorage.getItem(`aurixly_transactions_${userId}`) || '[]');
+      
+      dispatch({ type: 'SET_INVESTMENTS', payload: userInvestments });
+      dispatch({ type: 'SET_TRANSACTIONS', payload: userTransactions });
+    } else {
+      dispatch({ type: 'SET_USER', payload: null });
+    }
   }, [isLoaded, clerkUser]);
 
-  // Live profit calculation - runs every 10 seconds
+  // Live profit calculation - runs every 5 seconds
   useEffect(() => {
     if (!state.currentUser) return;
     
-    console.log('Setting up profit calculation interval...');
-
     const interval = setInterval(() => {
       const activeInvestments = state.investments.filter(inv => 
         inv.userId === state.currentUser!.id && inv.isActive
@@ -265,7 +206,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const now = new Date();
         const secondsPassed = Math.floor((now.getTime() - investment.lastPayout.getTime()) / 1000);
         
-        if (secondsPassed >= 10) { // Update every 10 seconds
+        if (secondsPassed >= 5) { // Update every 5 seconds
           const hourlyProfit = (investment.amount || 0) * ((investment.hourlyRate || 0) / 100);
           const profitPerSecond = hourlyProfit / 3600; // Convert hourly to per second
           const newProfit = (investment.currentProfit || 0) + (profitPerSecond * secondsPassed);
@@ -276,8 +217,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
           // Calculate maximum possible profit
           const maxProfit = (investment.amount || 0) * ((investment.hourlyRate || 0) * (investment.duration || 0) / 100);
           const finalProfit = Math.min(newProfit, maxProfit);
-          
-          console.log(`Updating investment ${investment.id}: +$${(profitPerSecond * secondsPassed).toFixed(4)}`);
           
           hasUpdates = true;
           return {
@@ -296,11 +235,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updatedInvestments.forEach(investment => {
           dispatch({ type: 'UPDATE_INVESTMENT', payload: investment });
         });
+        
+        // Save to localStorage
+        if (state.currentUser) {
+          localStorage.setItem(`aurixly_investments_${state.currentUser.id}`, JSON.stringify(state.investments));
+        }
       }
-    }, 10000); // Check every 10 seconds
+    }, 5000); // Check every 5 seconds
 
     return () => clearInterval(interval);
   }, [state.currentUser, state.investments]);
+  
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}

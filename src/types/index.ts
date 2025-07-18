@@ -55,4 +55,5 @@ export interface AppState {
   transactions: Transaction[];
   isLoading: boolean;
   error?: string | null;
+  theme: 'light' | 'dark';
 }
