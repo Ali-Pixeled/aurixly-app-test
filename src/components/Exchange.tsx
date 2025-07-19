@@ -43,7 +43,7 @@ export function Exchange() {
     dispatch({ type: 'UPDATE_USER', payload: updatedUser });
     dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
 
-    alert('Deposit successful!');
+    alert(`✅ Deposit successful!\n\n💰 Amount: $${depositAmount.toFixed(2)}\n💳 Method: ${paymentMethod === 'easypaisa' ? 'Easypaisa' : paymentMethod === 'jazzcash' ? 'JazzCash' : 'Credit Card'}\n💵 New Balance: $${(currentUser.balance + depositAmount).toFixed(2)}`);
     setActiveAction(null);
     setAmount('');
   };

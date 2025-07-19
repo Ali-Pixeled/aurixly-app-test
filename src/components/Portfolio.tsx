@@ -111,9 +111,9 @@ export function Portfolio() {
             <div>
               <p className="text-yellow-100 text-sm">Current Profits</p>
               <p className="text-2xl font-bold animate-pulse">
-                ${currentProfits.toFixed(4)}
+                ${currentProfits.toFixed(6)}
               </p>
-              <p className="text-yellow-100 text-xs">Live earnings</p>
+              <p className="text-yellow-100 text-xs font-semibold">🔴 LIVE</p>
             </div>
             <TrendingUp className="h-8 w-8 text-yellow-200" />
           </div>
@@ -150,11 +150,11 @@ export function Portfolio() {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-semibold text-gray-900">
-                        ${(investment.amount || 0).toFixed(2)}
+                        ${investment.amount.toFixed(2)}
                       </p>
                       <p className="text-sm text-green-600 font-medium">
-                        <span className="animate-pulse">+${(investment.currentProfit || 0).toFixed(4)}</span>
-                        <span className="text-xs ml-1">LIVE</span>
+                        <span className="animate-pulse">+${investment.currentProfit.toFixed(6)}</span>
+                        <span className="text-xs ml-1 bg-green-100 text-green-800 px-1 rounded">LIVE</span>
                       </p>
                     </div>
                   </div>

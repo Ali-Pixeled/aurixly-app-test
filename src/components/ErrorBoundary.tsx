@@ -21,7 +21,15 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    console.error('ErrorBoundary caught an error:', error.message, errorInfo);
+    
+    // Log specific error details for debugging
+    if (error.message.includes('toLocaleString')) {
+      console.error('Date formatting error - likely invalid date object');
+    }
+    if (error.message.includes('Cannot read property')) {
+      console.error('Property access error - likely null/undefined object');
+    }
   }
 
   private handleRetry = () => {

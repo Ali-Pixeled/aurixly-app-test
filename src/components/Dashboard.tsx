@@ -34,7 +34,8 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
 
   const userInvestments = investments.filter(inv => inv.userId === currentUser.id);
   const activeInvestments = userInvestments.filter(inv => inv.isActive);
-  const totalProfits = userInvestments.reduce((sum, inv) => sum + (inv.currentProfit || 0), 0);
+  const currentProfits = activeInvestments.reduce((sum, inv) => sum + (inv.currentProfit || 0), 0);
+  const totalEarned = userInvestments.reduce((sum, inv) => sum + (inv.totalEarned || 0), 0);
 
   const stats = [
     {
@@ -42,8 +43,8 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
       value: `$${currentUser.balance.toFixed(2)}`,
       icon: Wallet,
       color: 'bg-green-500',
-      change: currentUser.balance > 100 ? `+${((currentUser.balance - 100) / 100 * 100).toFixed(1)}%` : '0%',
-      changeType: currentUser.balance > 100 ? 'positive' : 'neutral'
+      change: currentUser.balance > 100 ? `+${((currentUser.balance - 100) / 100 * 100).toFixed(1)}%` : currentUser.balance < 100 ? `-${((100 - currentUser.balance) / 100 * 100).toFixed(1)}%` : '0%',
+      changeType: currentUser.balance > 100 ? 'positive' : currentUser.balance < 100 ? 'negative' : 'neutral'
     },
     {
       title: 'Total Invested',
@@ -54,20 +55,20 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
       changeType: currentUser.totalInvested > 0 ? 'positive' : 'neutral'
     },
     {
-      title: 'Total Earned',
-      value: `$${(currentUser.totalEarned || 0).toFixed(2)}`,
+      title: 'Current Profits',
+      value: `$${currentProfits.toFixed(4)}`,
       icon: TrendingUp,
       color: 'bg-yellow-500',
-      change: totalProfits > 0 ? `+$${totalProfits.toFixed(2)}` : '$0.00',
-      changeType: totalProfits > 0 ? 'positive' : 'neutral'
+      change: currentProfits > 0 ? 'LIVE' : '$0.00',
+      changeType: currentProfits > 0 ? 'positive' : 'neutral'
     },
     {
-      title: 'Active Investments',
-      value: activeInvestments.length.toString(),
+      title: 'Total Earned',
+      value: `$${totalEarned.toFixed(2)}`,
       icon: DollarSign,
       color: 'bg-purple-500',
-      change: activeInvestments.length > 0 ? `${activeInvestments.length} running` : 'None',
-      changeType: activeInvestments.length > 0 ? 'neutral' : 'negative'
+      change: totalEarned > 0 ? `+${((totalEarned / (currentUser.totalInvested || 1)) * 100).toFixed(1)}%` : '0%',
+      changeType: totalEarned > 0 ? 'positive' : 'neutral'
     },
   ];
 
@@ -77,7 +78,8 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
     activeTab,
     userInvestments: userInvestments.length,
     activeInvestments: activeInvestments.length,
-    totalProfits
+    currentProfits,
+    totalEarned
   });
   const renderHomeContent = () => (
     <div className="space-y-6 md:space-y-8 animate-fade-in px-2 md:px-0">
@@ -250,9 +252,9 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
                   </div>
                   <div className="text-right flex-shrink-0 ml-2">
                     <span className="text-xs md:text-sm font-bold text-green-600 animate-pulse">
-                      +${investment.currentProfit.toFixed(2)}
+                      +${(investment.currentProfit || 0).toFixed(4)}
                     </span>
-                    <p className="text-xs text-gray-500">Live</p>
+                    <p className="text-xs text-green-500 font-medium">LIVE</p>
                   </div>
                 </div>
               );

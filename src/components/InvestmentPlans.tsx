@@ -157,7 +157,7 @@ export function InvestmentPlans() {
       dispatch({ type: 'ADD_INVESTMENT', payload: investment });
       dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
 
-      alert(`🎉 Investment successful! $${amount} invested in ${plan.name}. Your earnings will start accumulating immediately.`);
+      alert(`🎉 Investment successful!\n\n💰 Amount: $${amount}\n📈 Plan: ${plan.name}\n⏰ Duration: ${getDurationText(plan.duration)}\n🎯 Expected Profit: $${calculateProfit(amount.toString(), plan.totalReturn)}\n\n✅ Your earnings will start accumulating immediately!`);
       setSelectedPlan(null);
       setInvestmentAmount('');
     } catch (error) {
