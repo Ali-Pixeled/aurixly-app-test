@@ -19,7 +19,6 @@ function AppContent() {
 
     return () => clearTimeout(timer);
   }, []);
-  console.log('App rendering...');
 
   if (isLoading) {
     return (
@@ -44,14 +43,13 @@ function AppContent() {
       </div>
     );
   }
+
   return (
     <ErrorBoundary>
       <SignedOut>
-        {console.log('User signed out, showing AuthForm')}
         <AuthForm />
       </SignedOut>
       <SignedIn>
-        {console.log('User signed in, showing Dashboard')}
         <AppProvider>
           <Layout activeTab={activeTab} onTabChange={setActiveTab}>
             <Dashboard activeTab={activeTab} onTabChange={setActiveTab} />
@@ -63,7 +61,6 @@ function AppContent() {
 }
 
 function App() {
-  console.log('Main App component rendering...');
   return <AppContent />;
 }
 

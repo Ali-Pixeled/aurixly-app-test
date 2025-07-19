@@ -13,17 +13,22 @@ export function Layout({ children, activeTab = 'home', onTabChange }: LayoutProp
   const { state, dispatch } = useApp();
   const { currentUser, theme } = state;
 
+  console.log('Layout render:', { currentUser: currentUser?.name, theme });
+
   const toggleTheme = () => {
     dispatch({ type: 'SET_THEME', payload: theme === 'light' ? 'dark' : 'light' });
   };
 
   if (!currentUser) {
+    console.log('Layout: No current user, rendering children directly');
     return (
       <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
         {children}
       </div>
     );
   }
+
+  console.log('Layout: Rendering with user:', currentUser.name);
 
   const bottomNavItems = [
     { id: 'home', label: 'Home', icon: Home },

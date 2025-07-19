@@ -34,7 +34,7 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
 
   const userInvestments = investments.filter(inv => inv.userId === currentUser.id);
   const activeInvestments = userInvestments.filter(inv => inv.isActive);
-  const totalProfits = userInvestments.reduce((sum, inv) => sum + (inv.totalEarned || 0), 0);
+  const totalProfits = userInvestments.reduce((sum, inv) => sum + (inv.currentProfit || 0), 0);
 
   const stats = [
     {
@@ -55,7 +55,7 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
     },
     {
       title: 'Total Earned',
-      value: `$${(totalProfits || 0).toFixed(2)}`,
+      value: `$${(currentUser.totalEarned || 0).toFixed(2)}`,
       icon: TrendingUp,
       color: 'bg-yellow-500',
       change: '+8.7%',
@@ -71,6 +71,14 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
     },
   ];
 
+  // Debug logging
+  console.log('Dashboard render:', {
+    currentUser: currentUser?.name,
+    activeTab,
+    userInvestments: userInvestments.length,
+    activeInvestments: activeInvestments.length,
+    totalProfits
+  });
   const renderHomeContent = () => (
     <div className="space-y-6 md:space-y-8 animate-fade-in px-2 md:px-0">
       {/* Welcome Section */}

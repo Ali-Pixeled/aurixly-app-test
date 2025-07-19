@@ -3,7 +3,7 @@ import { useUser } from '@clerk/clerk-react';
 import { AppState, User, Investment, InvestmentPlan, Transaction } from '../types';
 
 type AppAction =
-  | { type: 'SET_USER'; payload: User | null }
+  | { type: 'SET_CURRENT_USER'; payload: User | null }
   | { type: 'SET_USERS'; payload: User[] }
   | { type: 'UPDATE_USER'; payload: User }
   | { type: 'SET_INVESTMENTS'; payload: Investment[] }
@@ -24,7 +24,7 @@ const initialState: AppState = {
   investmentPlans: [],
   transactions: [],
   isLoading: false,
-  theme: 'light',
+  theme: (localStorage.getItem('aurixly_theme') as 'light' | 'dark') || 'light',
 };
 
 const AppContext = createContext<{
@@ -34,12 +34,13 @@ const AppContext = createContext<{
 
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
-    case 'SET_USER':
+    case 'SET_CURRENT_USER':
+      return { ...state, currentUser: action.payload };
+    case 'SET_USERS':
       return { ...state, users: action.payload };
     case 'UPDATE_USER':
-      // Update user in database when balance changes
+      // Update user in localStorage
       if (action.payload) {
-        // Save to localStorage
         const storedUsers = JSON.parse(localStorage.getItem('aurixly_users') || '[]');
         const updatedUsers = storedUsers.map((u: User) => 
           u.id === action.payload.id ? action.payload : u
@@ -55,24 +56,17 @@ function appReducer(state: AppState, action: AppAction): AppState {
       };
     case 'SET_INVESTMENTS':
       return { ...state, investments: action.payload };
-      createInvestment(action.payload).catch(console.error);
-      return {
-        ...state,
-        investments: [...state.investments, action.payload],
-      };
+    case 'ADD_INVESTMENT':
       // Save to localStorage
       if (state.currentUser) {
         const updatedInvestments = [...state.investments, action.payload];
         localStorage.setItem(`aurixly_investments_${state.currentUser.id}`, JSON.stringify(updatedInvestments));
       }
-    case 'UPDATE_INVESTMENT':
-      // Update investment in database
       return {
         ...state,
-        investments: state.investments.map(inv =>
-          inv.id === action.payload.id ? action.payload : inv
-        ),
+        investments: [...state.investments, action.payload],
       };
+    case 'UPDATE_INVESTMENT':
       // Save to localStorage
       if (state.currentUser) {
         const updatedInvestments = state.investments.map(inv =>
@@ -80,18 +74,24 @@ function appReducer(state: AppState, action: AppAction): AppState {
         );
         localStorage.setItem(`aurixly_investments_${state.currentUser.id}`, JSON.stringify(updatedInvestments));
       }
+      return {
+        ...state,
+        investments: state.investments.map(inv =>
+          inv.id === action.payload.id ? action.payload : inv
+        ),
+      };
     case 'SET_TRANSACTIONS':
       return { ...state, transactions: action.payload };
     case 'ADD_TRANSACTION':
-      return {
-        ...state,
-        transactions: [...state.transactions, action.payload],
-      };
       // Save to localStorage
       if (state.currentUser) {
         const updatedTransactions = [...state.transactions, action.payload];
         localStorage.setItem(`aurixly_transactions_${state.currentUser.id}`, JSON.stringify(updatedTransactions));
       }
+      return {
+        ...state,
+        transactions: [...state.transactions, action.payload],
+      };
     case 'SET_INVESTMENT_PLANS':
       return { ...state, investmentPlans: action.payload };
     case 'SET_LOADING':
@@ -99,6 +99,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'SET_ERROR':
       return { ...state, error: action.payload };
     case 'SET_THEME':
+      localStorage.setItem('aurixly_theme', action.payload);
       return { ...state, theme: action.payload };
     case 'LOGOUT':
       return { ...state, currentUser: null };
@@ -111,9 +112,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const { user: clerkUser, isLoaded } = useUser();
 
-  // Initialize investment plans with fallback data
+  // Initialize investment plans
   useEffect(() => {
-    // Use local fallback plans to avoid Supabase errors
     const fallbackPlans = [
       {
         id: 'starter',
@@ -149,12 +149,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_INVESTMENT_PLANS', payload: fallbackPlans });
   }, []);
 
-  // Handle user authentication with local storage
+  // Handle user authentication with localStorage
   useEffect(() => {
     if (!isLoaded) return;
 
     if (clerkUser) {
-      // Create or get user from localStorage
       const userId = clerkUser.id;
       const storedUsers = JSON.parse(localStorage.getItem('aurixly_users') || '[]');
       
@@ -179,16 +178,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('aurixly_users', JSON.stringify(storedUsers));
       }
 
-      dispatch({ type: 'SET_USER', payload: user });
+      dispatch({ type: 'SET_CURRENT_USER', payload: user });
+      dispatch({ type: 'SET_USERS', payload: storedUsers });
 
       // Load user data from localStorage
-      const userInvestments = JSON.parse(localStorage.getItem(`aurixly_investments_${userId}`) || '[]');
-      const userTransactions = JSON.parse(localStorage.getItem(`aurixly_transactions_${userId}`) || '[]');
+      const userInvestments = JSON.parse(localStorage.getItem(`aurixly_investments_${userId}`) || '[]')
+        .map((inv: any) => ({
+          ...inv,
+          startDate: new Date(inv.startDate),
+          endDate: new Date(inv.endDate),
+          lastPayout: new Date(inv.lastPayout),
+        }));
+      
+      const userTransactions = JSON.parse(localStorage.getItem(`aurixly_transactions_${userId}`) || '[]')
+        .map((tx: any) => ({
+          ...tx,
+          createdAt: new Date(tx.createdAt),
+        }));
       
       dispatch({ type: 'SET_INVESTMENTS', payload: userInvestments });
       dispatch({ type: 'SET_TRANSACTIONS', payload: userTransactions });
     } else {
-      dispatch({ type: 'SET_USER', payload: null });
+      dispatch({ type: 'SET_CURRENT_USER', payload: null });
     }
   }, [isLoaded, clerkUser]);
 
@@ -235,11 +246,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updatedInvestments.forEach(investment => {
           dispatch({ type: 'UPDATE_INVESTMENT', payload: investment });
         });
-        
-        // Save to localStorage
-        if (state.currentUser) {
-          localStorage.setItem(`aurixly_investments_${state.currentUser.id}`, JSON.stringify(state.investments));
-        }
       }
     }, 5000); // Check every 5 seconds
 
