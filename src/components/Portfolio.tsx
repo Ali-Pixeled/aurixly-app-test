@@ -12,8 +12,11 @@ export function Portfolio() {
   const activeInvestments = userInvestments.filter(inv => inv.isActive);
   const completedInvestments = userInvestments.filter(inv => !inv.isActive);
   
-  // Safe calculation to prevent NaN values
-  const currentProfits = userInvestments.reduce((sum, inv) => sum + (inv.currentProfit || 0), 0);
+  // Calculate current profits from active investments only
+  const currentProfits = activeInvestments.reduce((sum, inv) => sum + (inv.currentProfit || 0), 0);
+  
+  // Calculate total profits from all investments
+  const totalProfits = userInvestments.reduce((sum, inv) => sum + (inv.totalEarned || 0), 0);
 
   const handleWithdrawProfit = (investment: any) => {
     if (!investment.canWithdraw) {
@@ -107,9 +110,10 @@ export function Portfolio() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-yellow-100 text-sm">Current Profits</p>
-              <p className="text-2xl font-bold">
-                ${currentProfits.toFixed(2)}
+              <p className="text-2xl font-bold animate-pulse">
+                ${currentProfits.toFixed(4)}
               </p>
+              <p className="text-yellow-100 text-xs">Live earnings</p>
             </div>
             <TrendingUp className="h-8 w-8 text-yellow-200" />
           </div>
@@ -119,7 +123,7 @@ export function Portfolio() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-100 text-sm">Total Earned</p>
-              <p className="text-2xl font-bold">${currentUser.totalEarned.toFixed(2)}</p>
+              <p className="text-2xl font-bold">${totalProfits.toFixed(2)}</p>
             </div>
             <CheckCircle className="h-8 w-8 text-purple-200" />
           </div>
@@ -148,8 +152,9 @@ export function Portfolio() {
                       <p className="text-lg font-semibold text-gray-900">
                         ${(investment.amount || 0).toFixed(2)}
                       </p>
-                      <p className="text-sm text-green-600 font-medium animate-pulse">
-                        +${(investment.currentProfit || 0).toFixed(2)} earned
+                      <p className="text-sm text-green-600 font-medium">
+                        <span className="animate-pulse">+${(investment.currentProfit || 0).toFixed(4)}</span>
+                        <span className="text-xs ml-1">LIVE</span>
                       </p>
                     </div>
                   </div>

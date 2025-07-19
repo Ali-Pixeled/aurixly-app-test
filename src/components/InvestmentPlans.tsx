@@ -157,7 +157,7 @@ export function InvestmentPlans() {
       dispatch({ type: 'ADD_INVESTMENT', payload: investment });
       dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
 
-      alert('🎉 Investment successful! Your earnings will start accumulating immediately.');
+      alert(`🎉 Investment successful! $${amount} invested in ${plan.name}. Your earnings will start accumulating immediately.`);
       setSelectedPlan(null);
       setInvestmentAmount('');
     } catch (error) {

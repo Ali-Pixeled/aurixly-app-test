@@ -42,31 +42,31 @@ export function Dashboard({ activeTab = 'home', onTabChange }: DashboardProps) {
       value: `$${currentUser.balance.toFixed(2)}`,
       icon: Wallet,
       color: 'bg-green-500',
-      change: '+2.5%',
-      changeType: 'positive'
+      change: currentUser.balance > 100 ? `+${((currentUser.balance - 100) / 100 * 100).toFixed(1)}%` : '0%',
+      changeType: currentUser.balance > 100 ? 'positive' : 'neutral'
     },
     {
       title: 'Total Invested',
       value: `$${currentUser.totalInvested.toFixed(2)}`,
       icon: PiggyBank,
       color: 'bg-blue-500',
-      change: '+12.3%',
-      changeType: 'positive'
+      change: currentUser.totalInvested > 0 ? `${userInvestments.length} active` : 'None',
+      changeType: currentUser.totalInvested > 0 ? 'positive' : 'neutral'
     },
     {
       title: 'Total Earned',
       value: `$${(currentUser.totalEarned || 0).toFixed(2)}`,
       icon: TrendingUp,
       color: 'bg-yellow-500',
-      change: '+8.7%',
-      changeType: 'positive'
+      change: totalProfits > 0 ? `+$${totalProfits.toFixed(2)}` : '$0.00',
+      changeType: totalProfits > 0 ? 'positive' : 'neutral'
     },
     {
       title: 'Active Investments',
       value: activeInvestments.length.toString(),
       icon: DollarSign,
       color: 'bg-purple-500',
-      change: activeInvestments.length > 0 ? 'Active' : 'None',
+      change: activeInvestments.length > 0 ? `${activeInvestments.length} running` : 'None',
       changeType: activeInvestments.length > 0 ? 'neutral' : 'negative'
     },
   ];
